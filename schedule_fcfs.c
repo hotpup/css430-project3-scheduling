@@ -54,6 +54,6 @@ void schedule()
         Task *task = pickNextTask();
         run(task, task->burst);
         time += task->burst;
-        printf("Time is now:  %d\n", time);
+        printf("\tTime is now:  %d\n", time);
     }
 }

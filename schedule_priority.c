@@ -36,7 +36,7 @@ Task *pickNextTask()
 
     while (temp != NULL)
     {
-        if (temp->task->priority < best_sofar->priority)
+        if (temp->task->priority > best_sofar->priority)
         {
             best_sofar = temp->task;
         }
@@ -62,6 +62,6 @@ void schedule()
         Task *task = pickNextTask();
         run(task, task->burst);
         time += task->burst;
-        printf("Time is now:  %d\n", time);
+        printf("\tTime is now:  %d\n", time);
     }
 }
