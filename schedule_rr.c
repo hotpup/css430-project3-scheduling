@@ -9,7 +9,6 @@
 #include "schedulers.h"
 
 struct node *head;
-Task *last;
 
 void add(char *name, int priority, int burst)
 {
@@ -41,12 +40,7 @@ Task *pickNextTask()
             best_sofar = temp->task;
         temp = temp->next;
     }
-    delete (&head, best_sofar);
-    if (last != NULL)
-    {
-        insert(&head, last);
-    }
-    last = best_sofar;
+
     return best_sofar;
 }
 
