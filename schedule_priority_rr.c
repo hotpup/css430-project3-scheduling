@@ -80,6 +80,8 @@ void schedule()
                 run(task, task->burst);
                 time += task->burst;
                 delete (&head, task);
+                free(task->name);
+                free(task);
             }
         }
         else
@@ -87,6 +89,8 @@ void schedule()
             run(task, task->burst);
             time += task->burst;
             delete (&head, task);
+            free(task->name);
+            free(task);
         }
         printf("\tTime is now:  %d\n", time);
     }
