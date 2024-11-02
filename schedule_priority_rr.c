@@ -10,13 +10,20 @@
 
 struct node *head;
 bool isRR = false;
+
 void add(char *name, int priority, int burst)
 {
     Task *temp = (Task *)malloc(sizeof(Task));
-    temp->name = strdup(name);
+    temp->tid = 0;
+    temp->name = name;
     temp->priority = priority;
     temp->burst = burst;
     insert(&head, temp);
+}
+
+bool comesBefore(char *a, char *b)
+{
+    return strcmp(a, b) < 0;
 }
 
 Task *pickNextTask()
@@ -31,12 +38,25 @@ Task *pickNextTask()
 
     while (temp != NULL)
     {
-        if (comesBefore(temp->task->name, best_sofar->name))
+        if (temp->task->priority > best_sofar->priority)
+        {
             best_sofar = temp->task;
+            isRR = false;
+        }
+        else if (temp->task->priority == best_sofar->priority && temp->task->tid < best_sofar->tid)
+        {
+            best_sofar = temp->task;
+            isRR = true;
+        }
+        else if (temp->task->tid == best_sofar->tid && temp->task->priority == best_sofar->priority && comesBefore(temp->task->name, best_sofar->name))
+        {
+            best_sofar = temp->task;
+            isRR = true;
+        }
         temp = temp->next;
     }
 
-    delete (&head, best_sofar);
+    best_sofar->tid++;
     return best_sofar;
 }
 
@@ -70,3 +90,4 @@ void schedule()
         }
         printf("\tTime is now:  %d\n", time);
     }
+}
