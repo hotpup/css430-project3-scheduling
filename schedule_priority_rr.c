@@ -19,59 +19,46 @@ void add(char *name, int priority, int burst)
     insert(&head, temp);
 }
 
-bool comesBefore(char *a, char *b)
-{
-    return strcmp(a, b) < 0;
-}
-
-Task *pickNextTask()
-{
-    // if list is empty, nothing to do
-    if (!head)
-        return NULL;
-
-    struct node *temp;
-    temp = head;
-    Task *best_sofar = temp->task;
-
-    while (temp != NULL)
-    {
-        if (temp->task->priority > best_sofar->priority)
-        {
-            best_sofar = temp->task;
-        }
-        else if (temp->task->priority == best_sofar->priority)
-        {
-
-            if (comesBefore(temp->task->name, best_sofar->name))
-                best_sofar = temp->task;
-        }
-        temp = temp->next;
-    }
-
-    return best_sofar;
-}
-
 void schedule()
 {
     int time = 0;
+    int timeQuantum = 10;
+    struct node *current = head; // Start with the head of the list
 
     while (head != NULL)
     {
-        Task *task = pickNextTask();
-        if (task->burst <= 10)
-        {
+        Task *task = current->task;
 
-            run(task, task->burst);
-            time += task->burst;
-            delete (&head, task);
+        // Determine burst time to execute (either full burst or timeQuantum)
+        int timeSlice = task->burst <= timeQuantum ? task->burst : timeQuantum;
+        run(task, timeSlice);
+        time += timeSlice;
+        task->burst -= timeSlice;
+
+        if (task->burst <= 0)
+        {
+            // Task is complete, so remove it from the list
+            struct node *toDelete = current;
+            current = current->next;        // Move to the next task before deletion
+            delete (&head, toDelete->task); // Delete task from list
+
+            // Free memory to prevent leaks
+            free(toDelete->task->name);
+            free(toDelete->task);
+            free(toDelete);
         }
         else
         {
-            run(task, 10);
-            time += 10;
-            task->burst -= 10;
+            // Move current pointer to the next task
+            current = current->next;
         }
-        printf("\tTime is now:  %d\n", time);
+
+        // If we've reached the end of the list, wrap around to the head
+        if (current == NULL)
+        {
+            current = head;
+        }
+
+        printf("\tTime is now: %d\n", time);
     }
 }
